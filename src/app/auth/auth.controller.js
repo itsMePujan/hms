@@ -1,11 +1,24 @@
 class authController {
   //register function
   register = (req, res, next) => {
-    res.json({
-      result: null,
-      message: "i m an auth controller",
-      meta: null,
-    });
+    try {
+      let payload = req.body;
+
+      if (req.file) {
+        payload.image = req.file.filename;
+      } else if (req.files) {
+        payload.image = req.files.map((item) => item.filename);
+      }
+
+      res.json({
+        result: payload,
+        //file: file,
+        message: "success",
+        meta: null,
+      });
+    } catch (except) {
+      next(except);
+    }
   };
 
   ///
