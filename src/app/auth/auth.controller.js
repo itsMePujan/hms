@@ -1,8 +1,14 @@
 class authController {
   //register function
   register = (req, res, next) => {
-    console.log("i m in auth controller");
+    res.json({
+      result: null,
+      message: "i m an auth controller",
+      meta: null,
+    });
   };
+
+  ///
 }
 
 const authCtrll = new authController();
