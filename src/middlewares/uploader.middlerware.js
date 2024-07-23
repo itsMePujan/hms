@@ -8,6 +8,7 @@ const myStorage = multer.diskStorage({
     }
     cb(null, path);
   },
+
   filename: (req, file, cb) => {
     let random = Math.round(Math.random() * 9999);
     let ext = file.originalname.split(".").pop();
