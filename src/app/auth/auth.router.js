@@ -14,6 +14,7 @@ router.post(
   uploader.array("image"),
   authCtrll.register
 );
+
 router.get("/verify-token/:token");
 router.post("set-password/:token");
 

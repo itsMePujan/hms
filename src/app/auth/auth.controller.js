@@ -8,12 +8,13 @@ class authController {
 
       const register = z.object({
         name: z.string().min(2).max(40),
-        email: z.string().email(),
+        email: z.string().email({ message: "Invalid Email address" }),
         role: z
           .string()
           .regex(/admin|user|hosteler/)
           .default("user"),
       });
+
       let validatedData = register.parse(payload);
 
       if (req.file) {
