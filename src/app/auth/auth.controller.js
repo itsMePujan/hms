@@ -8,7 +8,7 @@ class authController {
 
       const register = z.object({
         name: z.string().min(2).max(40),
-        email: z.string().email({ message: "Invalid Email address" }),
+        email: z.string().email(),
         role: z
           .string()
           .regex(/admin|user|hosteler/)

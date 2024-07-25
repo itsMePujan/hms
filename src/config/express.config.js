@@ -20,26 +20,35 @@ app.use((req, res, next) => {
 //garbage / Error handling
 
 app.use((error, req, res, next) => {
-  const code = error.code ?? 500;
-  const message = error.message ?? "Internal server error";
+  console.log("Garbage Collector : ", error);
+  let code = error.code ?? 500;
+  let message = error.message ?? "Internal server error";
+  let result = error.result ?? null;
 
-  //multer_error
+  // multer_error
   if (error instanceof MulterError) {
     if (error.code == "LIMIT_FILE_SIZE") {
       code = 400;
       message = error.message;
     }
   }
-  //Zod_error
+
+  // Zod_error
   if (error instanceof ZodError) {
-    if (error.message == "Invalid Email address") {
-      code = 400;
-      message = error.message;
-      console.log(message);
-    }
+    code = 400;
+    let zodError = error.errors;
+    let msg = {};
+    zodError.map((err) => {
+      /// msg.push({
+      ///   [err.path[0]]: err.message,
+      ///  });
+      msg[err.path[0]] = err.message;
+    });
+    message = "validation error";
+    result = msg;
   }
 
-  res.status(code).json({ result: null, message: message, meta: null });
+  res.status(code).json({ result, message, meta: null });
 });
 
 module.exports = app;
