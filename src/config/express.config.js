@@ -39,9 +39,6 @@ app.use((error, req, res, next) => {
     let zodError = error.errors;
     let msg = {};
     zodError.map((err) => {
-      /// msg.push({
-      ///   [err.path[0]]: err.message,
-      ///  });
       msg[err.path[0]] = err.message;
     });
     message = "validation error";
