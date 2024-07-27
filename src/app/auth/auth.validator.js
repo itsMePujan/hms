@@ -11,6 +11,7 @@ const registerSchema = z.object({
     .string()
     .regex(/admin|inactive/)
     .default("inactive"),
+  // token: z.string().max(100),
 });
 
 module.exports = { registerSchema };

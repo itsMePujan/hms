@@ -1,5 +1,6 @@
 const multer = require("multer");
 const fs = require("fs");
+const { generateRandomString } = require("../config/helpers");
 const myStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     let path = req.uploadDir ?? "./public/uploads";
@@ -13,7 +14,7 @@ const myStorage = multer.diskStorage({
   filename: (req, file, cb) => {
     let random = Math.round(Math.random() * 9999);
     let ext = file.originalname.split(".").pop();
-    let filename = Date.now() + "-" + random + "." + ext;
+    let filename = generateRandomString(15) + "." + ext;
     cb(null, filename);
   },
 });

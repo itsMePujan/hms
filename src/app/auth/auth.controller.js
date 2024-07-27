@@ -1,4 +1,5 @@
 const { z } = require("zod");
+const { generateRandomString } = require("../../config/helpers");
 
 class authController {
   //register function
@@ -13,6 +14,8 @@ class authController {
       }
       //TODO : DB STORE
       payload.status = "inactive";
+      payload.token = generateRandomString();
+      //console.log(token);
 
       // MAIL :
       res.json({
