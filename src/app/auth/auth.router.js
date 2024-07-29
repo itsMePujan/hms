@@ -18,7 +18,8 @@ router.post(
   authCtrll.register
 );
 
-router.get("/verify-token/:token");
+router.get("/verify-token/:token", authCtrll.verifyToken);
+
 router.post("set-password/:token");
 
 router.post("login");

@@ -1,9 +1,11 @@
+require("dotenv").config;
 const { z } = require("zod");
 const { generateRandomString } = require("../../config/helpers");
-
+const mailSrv = require("../../services/mail.service");
+const { registerEmailMessage } = require("./auth.services");
 class authController {
   //register function
-  register = (req, res, next) => {
+  register = async (req, res, next) => {
     try {
       let payload = req.body;
 
@@ -15,9 +17,16 @@ class authController {
       //TODO : DB STORE
       payload.status = "inactive";
       payload.token = generateRandomString();
-      //console.log(token);
 
-      // MAIL :
+      // MAIL : SEND MAIL
+      const mailAck = await mailSrv.emailSend(
+        payload.email,
+        "Activate Your Account",
+        registerEmailMessage(payload.name, payload.token)
+      );
+
+      console.log(mailAck);
+
       res.json({
         result: payload,
         message: "success",
@@ -28,7 +37,16 @@ class authController {
     }
   };
 
-  ///
+  ///verify token
+  verifyToken = (req, res, next) => {
+    try {
+      let token = req.params.token;
+      //TODO : DBS
+      console.log();
+    } catch (excep) {
+      next(excep);
+    }
+  };
 }
 
 const authCtrll = new authController();
