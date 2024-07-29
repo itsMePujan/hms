@@ -1,7 +1,7 @@
 {
   "name": "hms",
   "version": "1.0.0",
-  "description": "",
+  "description": "package for multidata handling multer",
   "main": "index.js",
   "scripts": {
     "start": "nodemon start index.js"
