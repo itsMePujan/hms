@@ -2,7 +2,7 @@ const router = require("express").Router();
 const authCtrll = require("./auth.controller");
 const uploader = require("../../middlewares/uploader.middlerware");
 const validateRequest = require("../../middlewares/validate-request.middleware");
-const { registerSchema } = require("./auth.validator");
+const { registerSchema, passwordSchema } = require("./auth.validator");
 
 //auth and authorization routes
 const dirSetup = (req, res, next) => {
@@ -11,7 +11,7 @@ const dirSetup = (req, res, next) => {
 };
 
 router.post(
-  "/register/",
+  "/register",
   dirSetup,
   uploader.array("image"),
   validateRequest(registerSchema),
@@ -20,9 +20,13 @@ router.post(
 
 router.get("/verify-token/:token", authCtrll.verifyToken);
 
-router.post("set-password/:token");
+router.post(
+  "/set-password/:token",
+  validateRequest(passwordSchema),
+  authCtrll.setPassword
+);
 
-router.post("login");
+router.post("/login");
 
 router.post("/forgot-password");
 router.get("me");

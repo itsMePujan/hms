@@ -14,4 +14,19 @@ const registerSchema = z.object({
   // token: z.string().max(100),
 });
 
-module.exports = { registerSchema };
+const passwordSchema = z
+  .object({
+    password: z
+      .string()
+      .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
+        message:
+          " Minimum eight characters, at least one letter, one number and one special character",
+      }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords didn't match",
+    path: ["confirmPassword"],
+  });
+
+module.exports = { registerSchema, passwordSchema };

@@ -37,16 +37,35 @@ class authController {
     }
   };
 
-  ///verify token
+  ///verify token TODo
   verifyToken = (req, res, next) => {
     try {
       let token = req.params.token;
       //TODO : DBS
-      console.log();
+      res.json({
+        result: token,
+        message: "success",
+        meta: null,
+      });
     } catch (excep) {
       next(excep);
     }
   };
+
+  //set password
+  async setPassword(req, res, next) {
+    try {
+      let token = req.params.token;
+      console.log(token);
+      res.json({
+        result: token,
+        message: "success",
+        meta: null,
+      });
+    } catch (excep) {
+      next(excep);
+    }
+  }
 }
 
 const authCtrll = new authController();
