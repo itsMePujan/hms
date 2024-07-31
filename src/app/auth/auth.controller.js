@@ -81,7 +81,7 @@ class authController {
         _id: 1234,
         name: "pujan poudel ",
         email: "pujan@admin.com",
-        role: "users",
+        role: "user",
         image: [],
         status: "inactive",
       };

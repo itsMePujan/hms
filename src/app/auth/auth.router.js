@@ -9,6 +9,7 @@ const {
 } = require("./auth.validator");
 
 const checkLogin = require("../../middlewares/auth.middleware");
+const checkPermission = require("../../middlewares/rbac.middleware");
 
 //auth and authorization routes
 const dirSetup = (req, res, next) => {
@@ -34,7 +35,7 @@ router.post(
 
 router.post("/login", validateRequest(loginSchema), authCtrll.login);
 
-router.get("/me", checkLogin, authCtrll.checkLogin);
+router.get("/me", checkLogin, checkPermission("user"), authCtrll.checkLogin);
 
 router.post("/forgot-password");
 router.post("/logout");
