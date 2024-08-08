@@ -61,6 +61,15 @@ class authService {
       throw error;
     }
   };
+
+  deletePatData = async (filter) => {
+    try {
+      let response = await PATModel.deleteMany(filter);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 
 const authSrv = new authService();

@@ -38,6 +38,6 @@ router.post("/login", validateRequest(loginSchema), authCtrll.login);
 router.get("/me", checkLogin, checkPermission("user"), authCtrll.checkLogin);
 
 router.post("/forgot-password");
-router.post("/logout");
+router.post("/logout", checkLogin, authCtrll.logoutUser);
 
 module.exports = router;

@@ -1,20 +1,10 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const authSrv = require("../app/auth/auth.services");
+const { getTokenFromHeader } = require("../config/helpers");
 
 const checkLogin = async (req, res, next) => {
-  let token = null;
-
-  if (req.headers["authorization"]) {
-    token = req.headers["authorization"];
-  }
-  if (req.headers["x-xsrf-token"]) {
-    token = req.headers["x-xsrf-token"];
-  }
-  if (req.query["token"]) {
-    token = req.query["token"];
-  }
-
+  let token = getTokenFromHeader(req);
   if (token == null) {
     next({ code: 401, message: "login required" });
   } else {

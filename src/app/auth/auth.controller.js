@@ -144,6 +144,22 @@ class authController {
       next(error);
     }
   }
+
+  async logoutUser(req, res, next) {
+    try {
+      let user = req.authUser;
+      let logout = await authSrv.deletePatData({ userId: user._id });
+      if (logout) {
+        res.json({
+          result: null,
+          message: "Logout Successfully",
+          meta: null,
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 const authCtrll = new authController();
