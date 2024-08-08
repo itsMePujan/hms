@@ -6,31 +6,24 @@ const { registerEmailMessage } = require("./auth.services");
 
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const authSrv = require("./auth.services");
+
+const authRequest = require("../auth/auth.request");
 
 class authController {
   //register function
   register = async (req, res, next) => {
     try {
-      let payload = req.body;
-
-      if (req.file) {
-        payload.image = req.file.filename;
-      } else if (req.files) {
-        payload.image = req.files.map((item) => item.filename);
-      }
-      //TODO : DB STORE
-      payload.status = "inactive";
-      payload.token = generateRandomString();
-
-      // MAIL : SEND MAIL
+      //REQ DATA FROM TRANSFORMER
+      let payload = new authRequest(req).transferRequestData();
+      //DBS SAVED DATA
+      let response = await authSrv.registerUser(payload);
+      //SEND MAIL AFTER USER REGISTER
       const mailAck = await mailSrv.emailSend(
         payload.email,
         "Activate Your Account",
         registerEmailMessage(payload.name, payload.token)
       );
-
-      console.log(mailAck);
-
       res.json({
         result: payload,
         message: "success",
@@ -42,15 +35,30 @@ class authController {
   };
 
   ///verify token TODo
-  verifyToken = (req, res, next) => {
+  verifyToken = async (req, res, next) => {
     try {
       let token = req.params.token;
       //TODO : DBS
-      res.json({
-        result: token,
-        message: "success",
-        meta: null,
-      });
+      let user = await authSrv.getUserByFilter({ token });
+      if (user) {
+        let updateStatus = await authSrv.updateByFilter(
+          { token },
+          {
+            status: "active",
+          }
+        );
+        res.json({
+          result: updateStatus,
+          message: "success",
+          meta: null,
+        });
+      } else {
+        res.json({
+          result: user,
+          message: "Failed to Verify Token OR Expired Token!!!",
+          meta: null,
+        });
+      }
     } catch (excep) {
       next(excep);
     }
@@ -60,10 +68,16 @@ class authController {
   async setPassword(req, res, next) {
     try {
       let token = req.params.token;
-      let encPass = bcryptjs.hashSync(req.body.password, 10);
-      console.log(token);
+      let user = await authSrv.getUserByFilter({ token });
+      if (user) {
+        let encPass = bcryptjs.hashSync(req.body.password, 10);
+        let updatePass = await authSrv.updateByFilter(
+          { token },
+          { password: encPass }
+        );
+      }
       res.json({
-        result: { token, encPass },
+        result: user,
         message: "success",
         meta: null,
       });
@@ -76,34 +90,42 @@ class authController {
   async login(req, res, next) {
     try {
       let data = req.body;
-      //TODO : userDetail came from dbs
-      let userDetail = {
-        _id: 1234,
-        name: "pujan poudel ",
-        email: "pujan@admin.com",
-        role: "user",
-        image: [],
-        status: "inactive",
-      };
+      //UserDetail from DBS
+      let userDetail = await authSrv.getUserByFilter({ email: data.email });
+      if (userDetail) {
+        if (bcryptjs.compareSync(data.password, userDetail.password)) {
+          let token = jwt.sign(
+            { userID: userDetail._id },
+            process.env.JWT_SEC,
+            {
+              expiresIn: "1h",
+            }
+          );
+          let refreshToken = jwt.sign(
+            { userID: userDetail._id },
+            process.env.JWT_SEC,
+            {
+              expiresIn: "2d",
+            }
+          );
+          let PATDATA = {
+            userId: userDetail._id,
+            token: token,
+            refreshToken: refreshToken,
+          };
 
-      if (bcryptjs.compareSync(data.password, userDetail.password)) {
-        let token = jwt.sign({ userID: userDetail._id }, process.env.JWT_SEC, {
-          expiresIn: "1h",
-        });
-        let refreshToken = jwt.sign(
-          { userID: userDetail._id },
-          process.env.JWT_SEC,
-          {
-            expiresIn: "2d",
-          }
-        );
-        res.json({
-          result: { token, refreshToken, type: "Bearer" },
-          message: "sucess",
-          meta: null,
-        });
+          let storePat = await authSrv.storePat(PATDATA);
+
+          res.json({
+            result: { token, refreshToken, type: "Bearer" },
+            message: "success",
+            meta: null,
+          });
+        } else {
+          next({ code: 400, message: "User Credential didn't Matched ¡¡" });
+        }
       } else {
-        next({ code: 400, message: "User Credential Didnt Matched ¡¡" });
+        next({ code: 400, message: "User Credential didn't Matched ¡¡" });
       }
     } catch (error) {
       next(error);

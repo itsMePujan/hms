@@ -1,7 +1,8 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const authSrv = require("../app/auth/auth.services");
 
-const checkLogin = (req, res, next) => {
+const checkLogin = async (req, res, next) => {
   let token = null;
 
   if (req.headers["authorization"]) {
@@ -21,21 +22,20 @@ const checkLogin = (req, res, next) => {
     if (!token) {
       next({ code: 401, message: "login required" });
     } else {
-      let data = jwt.verify(token, process.env.JWT_SEC);
-      let userDetail = {
-        _id: 1234,
-        name: "pujan poudel ",
-        email: "pujan@admin.com",
-        role: "user",
-        image: [],
-        status: "inactive",
-      };
+      let response = await authSrv.getPATByToken({ token });
+      if (response) {
+        let data = jwt.verify(token, process.env.JWT_SEC);
 
-      if (userDetail) {
-        req.authUser = userDetail;
-        next();
+        let userDetail = await authSrv.getUserByFilter({ _id: data.userID });
+
+        if (userDetail) {
+          req.authUser = userDetail;
+          next();
+        } else {
+          next({ code: 401, message: "Unauthorized Access" });
+        }
       } else {
-        next({ code: 401, message: "Unauthorized Access" });
+        next({ code: 401, message: "TOKEN INVALID OR EXPIRED" });
       }
     }
   }

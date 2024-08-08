@@ -7,6 +7,8 @@ const { ZodError } = require("zod");
 
 const app = express();
 
+require("../config/db.config");
+
 //json parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -20,32 +22,44 @@ app.use((req, res, next) => {
 //garbage / Error handling
 
 app.use((error, req, res, next) => {
-  console.log("Garbage Collector : ", error);
-  let code = error.code ?? 500;
-  let message = error.message ?? "Internal server error";
-  let result = error.result ?? null;
+  console.log(error);
+  let code = error.statusCode || 500;
+  let message = error.message || "Internal Server Error";
+  let result = error.result || null;
 
-  // multer_error
+  // Multer file handling error
   if (error instanceof MulterError) {
-    if (error.code == "LIMIT_FILE_SIZE") {
+    if (error.code === "LIMIT_FILE_SIZE") {
       code = 400;
-      message = error.message;
+      message = "File size limit exceeded";
     }
   }
 
-  // Zod_error
+  // Zod validation error formatting
   if (error instanceof ZodError) {
     code = 400;
-    let zodError = error.errors;
-    let msg = {};
-    zodError.map((err) => {
+    const zodError = error.errors;
+    const msg = {};
+    zodError.forEach((err) => {
       msg[err.path[0]] = err.message;
     });
-    message = "validation error";
+    message = "Validation error";
     result = msg;
   }
 
-  res.status(code).json({ result, message, meta: null });
+  // MongoDB error handling
+  if (error.code === 11000) {
+    code = 400;
+    let uniqueKeys = Object.keys(error.keyPattern);
+    message = uniqueKeys.map((key) => `${key} should be unique`).join(", ");
+    result = error.keyValue;
+  }
+
+  res.status(code).json({
+    result: result,
+    message: message,
+    meta: null,
+  });
 });
 
 module.exports = app;
