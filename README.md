@@ -1,4 +1,11 @@
 # hms
 
-package for multidata handling
-multer
+# bcryptjs
+
+    dotenv
+    express
+    jsonwebtoken
+    mongoose
+    multer
+    nodemailer
+    zod

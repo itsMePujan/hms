@@ -2,7 +2,10 @@ require("dotenv").config;
 const { z } = require("zod");
 const { generateRandomString } = require("../../config/helpers");
 const mailSrv = require("../../services/mail.service");
-const { registerEmailMessage } = require("./auth.services");
+const {
+  registerEmailMessage,
+  ResetPasswordMessage,
+} = require("./auth.services");
 
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -158,6 +161,82 @@ class authController {
       }
     } catch (error) {
       next(error);
+    }
+  }
+
+  // forgotPassword
+  async forgotPassword(req, res, next) {
+    try {
+      let { email } = req.body;
+      let user = await authSrv.getUserByFilter({ email });
+      if (user) {
+        let resetToken = generateRandomString(100);
+        let resetExpiry = Date.now() + 2 * 60 * 60 * 1000;
+
+        let resetData = {
+          resetToken: resetToken,
+          resetExpiry: resetExpiry,
+        };
+        let setResetToken = await authSrv.setResetToken(
+          { _id: user._id },
+          resetData
+        );
+        if (setResetToken.modifiedCount > 0) {
+          const mailAck = await mailSrv.emailSend(
+            user.email,
+            "Reset Your Password ",
+            ResetPasswordMessage(user.name, resetToken)
+          );
+          res.json({
+            result: setResetToken,
+            message: "Reset token set successfully",
+            meta: null,
+          });
+        } else {
+          res.status(500).json({ message: "Failed to set reset token" });
+        }
+      } else {
+        next({ code: 401, message: "User Not Found !" });
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async resetPassword(req, res, next) {
+    try {
+      let resetToken = req.params.token;
+      let user = await authSrv.getUserByFilter({ resetToken: resetToken });
+      // console.log(user);
+      if (user) {
+        let encPass = bcryptjs.hashSync(req.body.password, 10);
+        let updatePass = await authSrv.updateByFilter(
+          { resetToken },
+          { password: encPass }
+        );
+        let currentTIme = Date.now();
+        if (user.resetExpiry > currentTIme) {
+          let updateresetToken = await authSrv.updateByFilter(
+            { _id: user._id },
+            { resetToken: null, resetExpiry: null }
+          );
+          res.json({
+            result: user,
+            message: "success",
+            meta: null,
+          });
+        } else {
+          let updateresetToken = await authSrv.updateByFilter(
+            { _id: user._id },
+            { resetToken: null, resetExpiry: null }
+          );
+          next({ code: 401, message: "RESET TOKEN ALREADY EXPIRED" });
+        }
+      } else {
+        next({ code: 401, message: "Reset Token Invalid !!" });
+      }
+    } catch (excep) {
+      next(excep);
     }
   }
 }

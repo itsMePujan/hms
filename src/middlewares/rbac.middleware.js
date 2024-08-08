@@ -1,15 +1,14 @@
 const checkPermission = (role) => {
   return (req, res, next) => {
     try {
-      //let allowedRole = role;
       let userRole = req.authUser;
       if (!userRole) {
-        next({ code: 502, message: "Unauthorized Acess" });
+        next({ code: 502, message: "Unauthorized Access" });
       } else {
         if (userRole.role == role) {
           next();
         } else {
-          next({ code: 502, message: "You Donot Have Permission" });
+          next({ code: 502, message: "You don't Have Permission" });
         }
       }
     } catch (error) {

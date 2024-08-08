@@ -17,6 +17,7 @@ const dirSetup = (req, res, next) => {
   next();
 };
 
+//Register Route
 router.post(
   "/register",
   dirSetup,
@@ -25,19 +26,27 @@ router.post(
   authCtrll.register
 );
 
+//Verify TOKEN // Verify EMAIL
 router.get("/verify-token/:token", authCtrll.verifyToken);
 
+//Set Password // reset pass
 router.post(
   "/set-password/:token",
   validateRequest(passwordSchema),
   authCtrll.setPassword
 );
 
+//LOGIN THROUGH EMAIL AND PASS
 router.post("/login", validateRequest(loginSchema), authCtrll.login);
 
+//USER DASHBOARD
 router.get("/me", checkLogin, checkPermission("user"), authCtrll.checkLogin);
 
-router.post("/forgot-password");
+router.get("/refresh-token", checkLogin, (req, res, next) => {});
+
+// forgot-password->  // received email as body , send email with resetTOken with reset Expiry
+router.post("/forgot-password", authCtrll.forgotPassword);
+router.post("/reset-password/:token", authCtrll.resetPassword);
 router.post("/logout", checkLogin, authCtrll.logoutUser);
 
 module.exports = router;

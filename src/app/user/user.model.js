@@ -15,8 +15,8 @@ const UserSchemaDef = new mongoose.Schema(
     phone: String,
     role: { type: String, enum: ["user", "admin", "seller"], default: "user" },
     token: String,
-    resetToken: String,
-    resetExpiry: String,
+    resetToken: { type: String, default: null },
+    resetExpiry: { type: String, default: null },
   },
   {
     timestamps: true,
