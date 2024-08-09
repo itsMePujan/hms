@@ -12,9 +12,11 @@ require("../config/db.config");
 //json parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 //api
 app.use("/api/", router);
 
+//404 handle
 app.use((req, res, next) => {
   res.status(404).json({ result: null, message: "not found", meta: null });
 });

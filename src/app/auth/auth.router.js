@@ -11,7 +11,6 @@ const {
 const checkLogin = require("../../middlewares/auth.middleware");
 const checkPermission = require("../../middlewares/rbac.middleware");
 
-//auth and authorization routes
 const dirSetup = (req, res, next) => {
   req.uploadDir = "./public/uploads/users";
   next();
@@ -46,7 +45,11 @@ router.get("/refresh-token", checkLogin, (req, res, next) => {});
 
 // forgot-password->  // received email as body , send email with resetTOken with reset Expiry
 router.post("/forgot-password", authCtrll.forgotPassword);
-router.post("/reset-password/:token", authCtrll.resetPassword);
+router.post(
+  "/reset-password/:token",
+  validateRequest(passwordSchema),
+  authCtrll.resetPassword
+);
 router.post("/logout", checkLogin, authCtrll.logoutUser);
 
 module.exports = router;

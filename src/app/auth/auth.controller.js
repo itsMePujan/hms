@@ -37,7 +37,7 @@ class authController {
     }
   };
 
-  ///verify token TODo
+  ///verify token
   verifyToken = async (req, res, next) => {
     try {
       let token = req.params.token;
@@ -134,7 +134,7 @@ class authController {
       next(error);
     }
   }
-
+  //dashboard
   async checkLogin(req, res, next) {
     try {
       let user = req.authUser;
