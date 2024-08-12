@@ -9,7 +9,6 @@ class bannerRequest {
       data.image = request.file.filename;
     }
     data.createdBy = request.authUser._id;
-
     return data;
   };
 }

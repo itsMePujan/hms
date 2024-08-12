@@ -4,7 +4,7 @@ const BannerSchemaDef = new mongoose.Schema(
   {
     title: { type: String, require: true, min: 3 },
     image: { type: String, require: true },
-    url: String,
+    url: { type: String, require: false },
     status: { type: String, enum: ["active", "inactive"], default: "inactive" },
     createdBy: {
       type: mongoose.Types.ObjectId,
@@ -18,3 +18,5 @@ const BannerSchemaDef = new mongoose.Schema(
 );
 
 const BannerModel = mongoose.model("Banner", BannerSchemaDef);
+
+module.exports = BannerModel;

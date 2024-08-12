@@ -13,6 +13,7 @@ const dirSetup = (req, res, next) => {
 };
 router
   .route("/")
+  .get(checkLogin, checkPermission("admin"), bannerCtrl.listAllBanner)
   .post(
     checkLogin,
     checkPermission("admin"),
