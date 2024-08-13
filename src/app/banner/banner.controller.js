@@ -1,5 +1,8 @@
+const { response } = require("express");
 const bannerReq = require("./banner.request");
 const bannerSvc = require("./banner.service");
+
+const fs = require("fs");
 
 class BannerController {
   bannerCreate = async (req, res, next) => {
@@ -59,6 +62,51 @@ class BannerController {
             limit: limit,
           },
         });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getDataById = async (req, res, next) => {
+    try {
+      let id = req.params.id;
+      let response = await bannerSvc.getDataById({ _id: id });
+      if (response) {
+        res.json({
+          result: response,
+          message: "success",
+          meta: null,
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+  updateById = async (req, res, next) => {
+    try {
+      let id = req.params.id;
+      let currentData = await bannerSvc.getDataById({ _id: id });
+      if (currentData) {
+        let currentImageName = currentData.image;
+        let data = bannerReq.transformUpdateRequest(req);
+        let response = await bannerSvc.updateById({ _id: id }, data);
+        if (response) {
+          if (data.image) {
+            let ImagePath = `./public/uploads/banners/${currentImageName}`;
+            fs.unlinkSync(ImagePath, (error) => {
+              if (error) {
+                console.log("error deleting previous file");
+                return;
+              }
+            });
+          }
+          res.json({
+            result: response,
+            message: "Banner Updated Successful",
+            meta: null,
+          });
+        }
       }
     } catch (error) {
       next(error);

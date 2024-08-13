@@ -26,4 +26,7 @@ const getTokenFromHeader = (req) => {
   return token;
 };
 
-module.exports = { generateRandomString, getTokenFromHeader };
+module.exports = {
+  generateRandomString,
+  getTokenFromHeader,
+};

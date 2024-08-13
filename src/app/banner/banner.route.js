@@ -23,4 +23,16 @@ router
     bannerCtrl.bannerCreate
   );
 
+router
+  .route("/:id")
+  .get(bannerCtrl.getDataById)
+  .put(
+    checkLogin,
+    checkPermission("admin"),
+    dirSetup,
+    uploader.single("image"),
+    validateRequest(BannerCreateSchema),
+    bannerCtrl.updateById
+  );
+
 module.exports = router;

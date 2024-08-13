@@ -32,6 +32,35 @@ class BannerService {
       throw error;
     }
   };
+
+  getDataById = async (filter) => {
+    try {
+      const databyId = await BannerModel.findOne(filter).populate("createdBy", [
+        "_id",
+        "name",
+      ]);
+      if (databyId) {
+        return databyId;
+      } else {
+        throw { code: 401, message: "Banner Not Found" };
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  updateById = async (filter, data) => {
+    try {
+      let updateData = await BannerModel.updateOne(filter, { $set: data });
+      if (updateData) {
+        return updateData;
+      } else {
+        throw { code: 401, message: "Error Updating Banner" };
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 
 const bannerSvc = new BannerService();

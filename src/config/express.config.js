@@ -5,6 +5,7 @@ const router = require("../router/index");
 const { MulterError } = require("multer");
 const { ZodError } = require("zod");
 
+const { convertNullPrototypeObjects } = require("./helpers");
 const app = express();
 
 require("../config/db.config");
@@ -55,6 +56,13 @@ app.use((error, req, res, next) => {
     let uniqueKeys = Object.keys(error.keyPattern);
     message = uniqueKeys.map((key) => `${key} should be unique`).join(", ");
     result = error.keyValue;
+  }
+  s;
+
+  if (error.code === "TokenExpiredError") {
+    code = 400;
+    message = "Login Session Expired";
+    result = error.name;
   }
 
   res.status(code).json({
