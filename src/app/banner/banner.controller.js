@@ -1,6 +1,7 @@
 const { response } = require("express");
 const bannerReq = require("./banner.request");
 const bannerSvc = require("./banner.service");
+const { deleteImageIFExist } = require("../../config/helpers");
 
 const fs = require("fs");
 
@@ -20,7 +21,6 @@ class BannerController {
       next(error);
     }
   };
-
   //list banners with pagination
   listAllBanner = async (req, res, next) => {
     try {
@@ -83,6 +83,7 @@ class BannerController {
       next(error);
     }
   };
+
   updateById = async (req, res, next) => {
     try {
       let id = req.params.id;
@@ -93,13 +94,7 @@ class BannerController {
         let response = await bannerSvc.updateById({ _id: id }, data);
         if (response) {
           if (data.image) {
-            let ImagePath = `./public/uploads/banners/${currentImageName}`;
-            fs.unlinkSync(ImagePath, (error) => {
-              if (error) {
-                console.log("error deleting previous file");
-                return;
-              }
-            });
+            deleteImageIFExist("banners", currentImageName);
           }
           res.json({
             result: response,
@@ -107,6 +102,28 @@ class BannerController {
             meta: null,
           });
         }
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  deleteBanner = async (req, res, next) => {
+    try {
+      let id = req.params.id;
+      let getData = await bannerSvc.getDataById({ _id: id });
+      if (response) {
+        let deleteData = await bannerSvc.deleteDataByID({ _id: id });
+        if (deleteData) {
+          deleteImageIFExist("banners", getData.image);
+        }
+        res.json({
+          result: response,
+          message: "Banner Deleted Successfully",
+          meta: null,
+        });
+      } else {
+        next({ code: 402, message: "Banner Not Found" });
       }
     } catch (error) {
       next(error);

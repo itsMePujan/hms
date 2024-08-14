@@ -1,3 +1,4 @@
+const fs = require("fs");
 const generateRandomString = (len = 100) => {
   let chars = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let length = chars.length;
@@ -26,7 +27,22 @@ const getTokenFromHeader = (req) => {
   return token;
 };
 
+const deleteImageIFExist = (paths, image) => {
+  let ImagePath = `./public/uploads/${paths}/${image}`;
+  if (fs.existsSync(ImagePath)) {
+    fs.unlinkSync(ImagePath, (error) => {
+      if (error) {
+        console.log("error deleting previous file");
+        return;
+      }
+    });
+  } else {
+    throw { code: 401, message: "error Deleting image" };
+  }
+};
+
 module.exports = {
   generateRandomString,
   getTokenFromHeader,
+  deleteImageIFExist,
 };

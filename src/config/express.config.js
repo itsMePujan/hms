@@ -57,7 +57,6 @@ app.use((error, req, res, next) => {
     message = uniqueKeys.map((key) => `${key} should be unique`).join(", ");
     result = error.keyValue;
   }
-  s;
 
   if (error.code === "TokenExpiredError") {
     code = 400;

@@ -11,6 +11,7 @@ const dirSetup = (req, res, next) => {
   req.uploadDir = "./public/uploads/banners";
   next();
 };
+
 router
   .route("/")
   .get(checkLogin, checkPermission("admin"), bannerCtrl.listAllBanner)
@@ -33,6 +34,7 @@ router
     uploader.single("image"),
     validateRequest(BannerCreateSchema),
     bannerCtrl.updateById
-  );
+  )
+  .delete(checkLogin, checkPermission("admin"), bannerCtrl.deleteBanner);
 
 module.exports = router;

@@ -61,6 +61,19 @@ class BannerService {
       throw error;
     }
   };
+
+  deleteDataByID = async (id) => {
+    try {
+      let deleteData = BannerModel.deleteOne(id);
+      if (deleteData) {
+        return deleteData;
+      } else {
+        throw { code: 401, message: "Banner not Found or already Deleted" };
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
 }
 
 const bannerSvc = new BannerService();
