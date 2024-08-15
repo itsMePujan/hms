@@ -6,6 +6,12 @@ const BrandSchemaDef = mongoose.Schema(
     image: { type: String, require: true },
     description: String,
     status: { type: String, enum: ["active", "inactive"], default: "active" },
+    createdBy: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      require: true,
+      default: null,
+    },
   },
   {
     timestamps: true,
