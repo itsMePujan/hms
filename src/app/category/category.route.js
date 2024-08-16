@@ -35,7 +35,3 @@ router
   )
   .delete(checkLogin, checkPermission("admin"), categoryCtrl.deleteDataById);
 module.exports = router;
-
-/// create update delete , category Model done thank you :) their is lot more things to do in this module
-// i have just done basic crud with zod validation , and auth validation , permission ,
-// :)
