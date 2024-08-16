@@ -1,3 +1,5 @@
+const { default: slugify } = require("slugify");
+
 class brandRequest {
   body;
   file;
@@ -18,6 +20,7 @@ class brandRequest {
       payload.image = this.file.filename;
     }
     payload.createdBy = this.authUser;
+    payload.slug = slugify(payload.title);
 
     return payload;
   };
@@ -27,6 +30,8 @@ class brandRequest {
     if (this.file) {
       payload.image = this.file.filename;
     }
+    payload.slug = slugify(payload.title);
+
     return payload;
   };
 }

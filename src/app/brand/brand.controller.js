@@ -1,4 +1,4 @@
-const { json } = require("express");
+const slugify = require("slugify");
 const brandRequest = require("./brand.request");
 const brandSrv = require("./brand.service");
 const { deleteImageIFExist } = require("../../config/helpers");
@@ -31,6 +31,7 @@ class BrandController {
             { title: new RegExp(req.query["search"], "i") },
             { url: new RegExp(req.query["search"], "i") },
             { status: new RegExp(req.query["search"], "i") },
+            { slug: new RegExp(req.query["search"], "i") },
           ],
         };
       }
