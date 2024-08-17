@@ -70,9 +70,12 @@ class CategoryController {
   getDataById = async (req, res, next) => {
     try {
       let filter = {};
-      //
-      let slug = req.params.slug;
-      if (slug) {
+
+      if (req.params.id) {
+        let id = req.params.id;
+        filter = { _id: id };
+      } else if (req.params.slug) {
+        let slug = req.params.slug;
         filter = {
           slug: slug,
         };
@@ -86,6 +89,7 @@ class CategoryController {
         };
       }
 
+      console.log(filter);
       //
       let totalCount = await categorySrv.countData(filter);
       let page = req.query["page"] || 1;

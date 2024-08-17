@@ -29,6 +29,7 @@ router.route("/:slug/slug").get(categoryCtrl.getDataById);
 
 router
   .route("/:id")
+  .get(categoryCtrl.getDataById)
   .put(
     checkLogin,
     checkPermission("admin"),
