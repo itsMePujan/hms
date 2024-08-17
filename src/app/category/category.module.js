@@ -11,6 +11,7 @@ const categorySchemaDef = mongoose.Schema(
       default: "inactive",
       require: true,
     },
+    slug: { type: String, require: true },
     parentId: { type: mongoose.Types.ObjectId, ref: "Category", default: null },
     createdBy: { type: mongoose.Types.ObjectId, ref: "User", require: true },
   },

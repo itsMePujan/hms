@@ -1,9 +1,13 @@
+var slugify = require("slugify");
+
 class categoryRequest {
   body;
   file;
   authUser;
+  slug;
   constructor(req) {
     this.body = req.body;
+    this.slug = req.params.slug;
     this.authUser = req.authUser;
     this.file = req.file;
   }
@@ -20,6 +24,7 @@ class categoryRequest {
       description: payload.title,
       image: payload.image,
       status: payload.status,
+      slug: slugify(payload.title, { lower: true }),
       createdBy: this.authUser._id,
       parentId: payload.parentId,
     };
@@ -32,6 +37,7 @@ class categoryRequest {
     payload.createdBy = this.authUser._id;
     let data = {
       ...payload,
+      slug: slugify(payload.title, { lower: true }),
     };
     console.log(data);
     return data;

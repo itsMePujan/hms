@@ -70,13 +70,22 @@ class CategoryController {
   getDataById = async (req, res, next) => {
     try {
       let filter = {};
-      filter = {
-        $or: [
-          { title: new RegExp(req.query["search"], "i") },
-          { status: new RegExp(req.query["search"], "i") },
-          { description: new RegExp(req.query["search"], "i") },
-        ],
-      };
+      //
+      let slug = req.params.slug;
+      if (slug) {
+        filter = {
+          slug: slug,
+        };
+      } else {
+        filter = {
+          $or: [
+            { title: new RegExp(req.query["search"], "i") },
+            { status: new RegExp(req.query["search"], "i") },
+            { description: new RegExp(req.query["search"], "i") },
+          ],
+        };
+      }
+
       //
       let totalCount = await categorySrv.countData(filter);
       let page = req.query["page"] || 1;

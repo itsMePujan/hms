@@ -25,6 +25,8 @@ router
     categoryCtrl.createData
   );
 
+router.route("/:slug/slug").get(categoryCtrl.getDataById);
+
 router
   .route("/:id")
   .put(
