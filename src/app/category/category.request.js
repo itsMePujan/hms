@@ -12,13 +12,16 @@ class categoryRequest {
     if (!this.file) {
       throw { code: 401, message: "Category Image Required" };
     }
+
     payload.image = this.file.filename;
+    console.log(payload);
     let data = {
       title: payload.title,
       description: payload.title,
       image: payload.image,
       status: payload.status,
       createdBy: this.authUser._id,
+      parentId: payload.parentId,
     };
     console.log(data);
     return data;

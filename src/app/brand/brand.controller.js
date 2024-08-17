@@ -21,7 +21,6 @@ class BrandController {
     }
   };
   //with pagination
-
   getDataById = async (req, res, next) => {
     try {
       let filter = {};

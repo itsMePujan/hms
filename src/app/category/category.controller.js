@@ -5,17 +5,17 @@ const { deleteImageIFExist } = require("../../config/helpers");
 class CategoryController {
   //categorySave
   createData = async (req, res, next) => {
-    let data = new categoryRequest(req).transformCreateRequest();
-    //console.log(data);
-    let response = await categorySrv.createData(data);
-    res.json({
-      result: response,
-      message: "Category Added Successfully",
-      meta: null,
-    });
     try {
+      let data = new categoryRequest(req).transformCreateRequest();
+      //console.log(data);
+      let response = await categorySrv.createData(data);
+      res.json({
+        result: response,
+        message: "Category Added Successfully",
+        meta: null,
+      });
     } catch (error) {
-      throw error;
+      next(error);
     }
   };
 
@@ -62,6 +62,39 @@ class CategoryController {
           });
         }
       }
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getDataById = async (req, res, next) => {
+    try {
+      let filter = {};
+      filter = {
+        $or: [
+          { title: new RegExp(req.query["search"], "i") },
+          { status: new RegExp(req.query["search"], "i") },
+          { description: new RegExp(req.query["search"], "i") },
+        ],
+      };
+      //
+      let totalCount = await categorySrv.countData(filter);
+      let page = req.query["page"] || 1;
+      let limit = req.query["limit"] || 15;
+      let skip = (page - 1) * limit;
+      let fetchDataByFilter = await categorySrv.fetchDataByFilter(filter, {
+        offset: skip,
+        limit: limit,
+      });
+      res.json({
+        result: fetchDataByFilter,
+        message: "Successfully Fetched Data",
+        meta: {
+          totalPage: totalCount,
+          page: page,
+          limit: limit,
+        },
+      });
     } catch (error) {
       next(error);
     }

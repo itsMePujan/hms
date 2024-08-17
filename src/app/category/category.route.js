@@ -15,6 +15,7 @@ const dirSetup = (req, res, next) => {
 //createCategory // add done
 router
   .route("/")
+  .get(categoryCtrl.getDataById)
   .post(
     checkLogin,
     checkPermission("admin"),
@@ -34,4 +35,5 @@ router
     categoryCtrl.updateDataById
   )
   .delete(checkLogin, checkPermission("admin"), categoryCtrl.deleteDataById);
+
 module.exports = router;
